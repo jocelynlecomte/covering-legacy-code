@@ -1,77 +1,153 @@
 package com.assetco.hotspots.optimization;
 
 import com.assetco.search.results.*;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.assetco.search.results.AssetVendorRelationshipLevel.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DealsOptimizerTest {
     private DealsOptimizer optimizer = new DealsOptimizer();
+    private SearchResults searchResults;
+    private AssetAssessments rejectAllAssessor = anyAsset -> false;
+    private AssetAssessments acceptAllAssessor = anyAsset -> true;
+    protected AssetVendor partnerVendor;
+    protected AssetVendor goldVendor;
+    protected AssetVendor silverVendor;
+    protected AssetVendor basicVendor;
 
-    @Test
-    void optimizeUneligibleAssetFromSilverVendorShouldFail() {
-        AssetVendor vendor = createAssetVendor("vendor", AssetVendorRelationshipLevel.Silver, 0.5F);
-        AssetPurchaseInfo purchaseInfo = createAssetPurchaseInfo(1,0,0,0);
-        Asset asset = createAsset("asset", purchaseInfo, vendor);
-
-        SearchResults results = new SearchResults();
-        results.addFound(asset);
-
-        AssetAssessments assetAssessments = asset1 -> false;
-
-        optimizer.optimize(results, assetAssessments);
-
-        assertTrue(results.getHotspot(HotspotKey.Deals).getMembers().isEmpty());
+    @BeforeEach
+    private void init() {
+        searchResults = new SearchResults();
+        partnerVendor = createVendor(Partner);
+        goldVendor = createVendor(Gold);
+        silverVendor = createVendor(Silver);
+        basicVendor = createVendor(Basic);
     }
 
     @Test
-    void optimizeAssetFromPartnerVendorShouldBeOk() {
-        AssetVendor vendor = createAssetVendor("vendor", AssetVendorRelationshipLevel.Partner, 0.5F);
-        AssetPurchaseInfo purchaseInfo = createAssetPurchaseInfo(1,1,1000,0);
-        Asset asset = createAsset("asset", purchaseInfo, vendor);
+    void singleAssetPinningTests() {
+        // Partner tests
+        singleAssetTestCase(partnerVendor, 1000, 0, rejectAllAssessor, true);
+        singleAssetTestCase(partnerVendor, 1000, 200, rejectAllAssessor, true);
+        singleAssetTestCase(partnerVendor, 1000, 400, rejectAllAssessor, true);
+        singleAssetTestCase(partnerVendor, 1000, 600, rejectAllAssessor, true);
+        singleAssetTestCase(partnerVendor, 1000, 800, rejectAllAssessor, false);
+        singleAssetTestCase(partnerVendor, 1000, 1000, rejectAllAssessor, false);
+        singleAssetTestCase(partnerVendor, 1500, 0, rejectAllAssessor, true);
 
-        SearchResults results = new SearchResults();
-        results.addFound(asset);
+        singleAssetTestCase(partnerVendor, 1000, 0, acceptAllAssessor, true);
+        singleAssetTestCase(partnerVendor, 1000, 200, acceptAllAssessor, true);
+        singleAssetTestCase(partnerVendor, 1000, 400, acceptAllAssessor, true);
+        singleAssetTestCase(partnerVendor, 1000, 600, acceptAllAssessor, true);
+        singleAssetTestCase(partnerVendor, 1000, 800, acceptAllAssessor, false);
+        singleAssetTestCase(partnerVendor, 1000, 1000, acceptAllAssessor, false);
+        singleAssetTestCase(partnerVendor, 1500, 0, acceptAllAssessor, true);
 
-        AssetAssessments assetAssessments = asset1 -> false;
+        // Gold vendor tests
+        singleAssetTestCase(goldVendor, 1000, 0, rejectAllAssessor, true);
+        singleAssetTestCase(goldVendor, 1000, 200, rejectAllAssessor, true);
+        singleAssetTestCase(goldVendor, 1000, 400, rejectAllAssessor, true);
+        singleAssetTestCase(goldVendor, 1000, 600, rejectAllAssessor, false);
+        singleAssetTestCase(goldVendor, 1000, 800, rejectAllAssessor, false);
+        singleAssetTestCase(goldVendor, 1000, 1000, rejectAllAssessor, false);
+        singleAssetTestCase(goldVendor, 1500, 0, rejectAllAssessor, true);
 
-        optimizer.optimize(results, assetAssessments);
+        singleAssetTestCase(goldVendor, 1000, 0, acceptAllAssessor, true);
+        singleAssetTestCase(goldVendor, 1000, 200, acceptAllAssessor, true);
+        singleAssetTestCase(goldVendor, 1000, 400, acceptAllAssessor, true);
+        singleAssetTestCase(goldVendor, 1000, 600, acceptAllAssessor, true);
+        singleAssetTestCase(goldVendor, 1000, 800, acceptAllAssessor, false);
+        singleAssetTestCase(goldVendor, 1000, 1000, acceptAllAssessor, false);
+        singleAssetTestCase(goldVendor, 1500, 0, acceptAllAssessor, true);
 
-        assertEquals(1, results.getHotspot(HotspotKey.Deals).getMembers().size());
-        assertEquals(asset, results.getHotspot(HotspotKey.Deals).getMembers().get(0));
+        // Silver vendor tests
+        singleAssetTestCase(silverVendor, 1000, 0, rejectAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1000, 200, rejectAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1000, 400, rejectAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1000, 600, rejectAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1000, 800, rejectAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1000, 1000, rejectAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1500, 0, rejectAllAssessor, true);
+
+        singleAssetTestCase(silverVendor, 1000, 0, acceptAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1000, 200, acceptAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1000, 400, acceptAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1000, 600, acceptAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1000, 800, acceptAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1000, 1000, acceptAllAssessor, false);
+        singleAssetTestCase(silverVendor, 1500, 0, acceptAllAssessor, true);
+        
+        // Basic vendor tests
+        singleAssetTestCase(basicVendor, 1000, 0, rejectAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1000, 200, rejectAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1000, 400, rejectAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1000, 600, rejectAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1000, 800, rejectAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1000, 1000, rejectAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1500, 0, rejectAllAssessor, false);
+
+        singleAssetTestCase(basicVendor, 1000, 0, acceptAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1000, 200, acceptAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1000, 400, acceptAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1000, 600, acceptAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1000, 800, acceptAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1000, 1000, acceptAllAssessor, false);
+        singleAssetTestCase(basicVendor, 1500, 0, acceptAllAssessor, false);
     }
 
-    private Asset createAsset(String title, AssetPurchaseInfo purchaseInfo, AssetVendor vendor) {
-        return new Asset(
-                title,
-                title,
-                URI.create(""),
-                URI.create(""),
+    private void singleAssetTestCase(AssetVendor vendor, long revenue, long royalties, AssetAssessments assessor, boolean shouldBeAdded) {
+        init();
+
+        // GIVEN
+        var purchaseInfo = createPurchaseInfo(revenue, royalties);
+        var asset = createAssetAndAddToSearchResults(purchaseInfo, vendor);
+
+        // WHEN
+        optimizer.optimize(searchResults, assessor);
+
+        // THEN
+        if (shouldBeAdded) {
+            assertThat(searchResults.getHotspot(HotspotKey.Deals).getMembers()).containsOnly(asset);
+        }
+        else {
+            assertThat(searchResults.getHotspot(HotspotKey.Deals).getMembers()).doesNotContain(asset);
+        }
+    }
+
+    private Asset createAssetAndAddToSearchResults(AssetPurchaseInfo purchaseInfo, AssetVendor vendor) {
+        var asset = new Asset(
+                "asset",
+                "asset",
+                null,
+                null,
                 purchaseInfo,
                 purchaseInfo,
                 Collections.emptyList(),
                 vendor
                 );
+
+        searchResults.addFound(asset);
+        return asset;
     }
 
-    private AssetPurchaseInfo createAssetPurchaseInfo(
-            long timesShown,
-            long timesPurchased,
+    private AssetPurchaseInfo createPurchaseInfo(
             long totalRevenue,
             long totalRoyaltiesOwed
-            ) {
+    ) {
 
         return new AssetPurchaseInfo(
-                timesShown,
-                timesPurchased,
+                1,
+                1,
                 createMoney(totalRevenue),
                 createMoney(totalRoyaltiesOwed));
     }
@@ -84,7 +160,7 @@ class DealsOptimizerTest {
         return Arrays.stream(topics).map(topic -> new AssetTopic(topic, topic)).collect(Collectors.toList());
     }
 
-    private AssetVendor createAssetVendor(String name, AssetVendorRelationshipLevel relationshipLevel, float royaltyRate) {
-        return new AssetVendor(name, name, relationshipLevel, royaltyRate);
+    private AssetVendor createVendor(AssetVendorRelationshipLevel relationshipLevel) {
+        return new AssetVendor("vendor", "vendor", relationshipLevel, (float) 0.5);
     }
 }

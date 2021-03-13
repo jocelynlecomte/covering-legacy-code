@@ -2,4 +2,5 @@
 # Project exclude paths
 /HotspotOptimizerLibrary/target/
 /SearchResults/target/
+/SearchService/target/
 /.idea/
