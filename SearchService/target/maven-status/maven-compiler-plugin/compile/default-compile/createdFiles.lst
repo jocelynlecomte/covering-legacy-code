@@ -1,0 +1,6 @@
+com/assetco/search/service/SearchAssetVendor.class
+com/assetco/search/service/Application.class
+com/assetco/search/service/ElasticSearchProxy.class
+com/assetco/search/service/ElasticSearchDataSupply.class
+com/assetco/search/service/Health.class
+com/assetco/search/service/SearchAsset.class

@@ -1,0 +1,9 @@
+com/assetco/search/results/Hotspot.class
+com/assetco/search/results/Money.class
+com/assetco/search/results/HotspotKey.class
+com/assetco/search/results/AssetTopic.class
+com/assetco/search/results/AssetVendorRelationshipLevel.class
+com/assetco/search/results/SearchResults.class
+com/assetco/search/results/AssetVendor.class
+com/assetco/search/results/AssetPurchaseInfo.class
+com/assetco/search/results/Asset.class

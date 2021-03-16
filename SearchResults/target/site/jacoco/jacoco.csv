@@ -1,0 +1,10 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+SearchResults,com.assetco.search.results,Asset,0,52,0,0,0,18,0,9,0,9
+SearchResults,com.assetco.search.results,AssetPurchaseInfo,0,27,0,0,0,10,0,5,0,5
+SearchResults,com.assetco.search.results,Money,0,12,0,0,0,5,0,3,0,3
+SearchResults,com.assetco.search.results,AssetVendor,0,27,0,0,0,10,0,5,0,5
+SearchResults,com.assetco.search.results,AssetVendorRelationshipLevel,0,27,0,0,0,5,0,1,0,1
+SearchResults,com.assetco.search.results,HotspotKey,0,39,0,0,0,7,0,1,0,1
+SearchResults,com.assetco.search.results,Hotspot,0,18,0,0,0,5,0,3,0,3
+SearchResults,com.assetco.search.results,SearchResults,0,51,0,2,0,13,0,6,0,5
+SearchResults,com.assetco.search.results,AssetTopic,0,15,0,0,0,6,0,3,0,3

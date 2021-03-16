@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SearchResults.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SearchResults</a> &gt; <a href="index.source.html" class="el_package">com.assetco.search.results</a> &gt; <span class="el_source">SearchResults.java</span></div><h1>SearchResults.java</h1><pre class="source lang-java linenums">package com.assetco.search.results;
+
+import java.util.*;
+
+<span class="fc" id="L5">public class SearchResults {</span>
+<span class="fc" id="L6">    private final List&lt;Asset&gt; found = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L7">    private Map&lt;HotspotKey, Hotspot&gt; hotspots = new HashMap&lt;&gt;();</span>
+
+    public void addFound(Asset asset) {
+<span class="fc" id="L10">        found.add(asset);</span>
+<span class="fc" id="L11">    }</span>
+
+    public List&lt;Asset&gt; getFound() {
+<span class="fc" id="L14">        return found;</span>
+    }
+
+    public Hotspot getHotspot(HotspotKey key) {
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (hotspots.containsKey(key))</span>
+<span class="fc" id="L19">            return hotspots.get(key);</span>
+
+<span class="fc" id="L21">        var result = new Hotspot();</span>
+<span class="fc" id="L22">        hotspots.put(key, result);</span>
+
+<span class="fc" id="L24">        return result;</span>
+    }
+
+    public void clearHotspots() {
+<span class="fc" id="L28">        hotspots = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L29">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
